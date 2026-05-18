@@ -46,10 +46,10 @@ echo =================================================================
 echo   DANG BAT: TOI UU HOAC CHUOT ^& BAN PHIM (INPUT LAG ~0MS)
 echo =================================================================
 echo [*] Giam kich thuoc hang doi du lieu Chuot de phan hoi tuc thi...
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Mouclass\Parameters" /v "MouseDataQueueSize" /t REG_DWORD /d 15 /f >nul
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Mouclass\Parameters" /v "MouseDataQueueSize" /t REG_DWORD /d 50 /f >nul
 
 echo [*] Giam kich thuoc hang doi du lieu Ban phim...
-reg add "HKLM\SYSTEM\CurrentControlSet\Services\Kbdclass\Parameters" /v "KeyboardDataQueueSize" /t REG_DWORD /d 15 /f >nul
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Kbdclass\Parameters" /v "KeyboardDataQueueSize" /t REG_DWORD /d 50 /f >nul
 
 echo [*] Vo hieu hoa Sticky Keys va cac bo loc gay tre dem phim...
 reg add "HKCU\Control Panel\Accessibility\StickyKeys" /v "Flags" /t REG_SZ /d "506" /f >nul
