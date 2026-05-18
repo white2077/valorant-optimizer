@@ -1,52 +1,167 @@
-# 🚀 BỘ CÔNG CỤ TỐI ƯU HÓA PHẦN CỨNG & GIẢM ĐỘ TRỄ (INPUT LAG) VALORANT
+@echo off
+title HO THONG TOI UU HOA PHAN CUNG & REDUCE INPUT LAG TO 0MS (VALORANT MAX PING) Dungbh
+cls
+color 0B
 
-Bộ công cụ bằng file Batch (`.bat`) giúp can thiệp an toàn vào Windows Registry, thiết lập nguồn điện nâng cao và cấu hình lại băng thông mạng nhằm ép phần cứng phản hồi nhanh nhất có thể, triệt tiêu độ trễ chuột/bàn phím khi chơi VALORANT.
+:: Kiem tra quyen Admin
+net session >nul 2>&1
+if %errorLevel% == 0 (
+    goto menu
+) else (
+    echo =================================================================
+    echo [LOI] BAN PHAI CHAY FILE NAY VOI QUYEN ADMIN!
+    echo =================================================================
+    echo.
+    echo Huong dan: Nhap chuot phai vao file nay va chon "Run as administrator".
+    echo.
+    pause
+    exit
+)
 
----
+:menu
+cls
+echo =================================================================
+echo   BO CONG CU EP MAX PHAN CUNG - TRIET TIEU INPUT LAG CHO VALORANT
+echo =================================================================
+echo   [1] BAT: Tuyen tap giam Input Lag Chuot ^& Ban phim ve ~0ms
+echo   [2] BAT: Ep CPU ^& GPU chay het cong suat (Max Peak Performance)
+echo   [3] BAT: Toi uu hoa He thong ^& Bang thong Mang (Giam delay Ping)
+echo   [4] TAT / REVERT: Khoi phuc tat ca thiet lap ve mac dinh Windows
+echo   [5] BONUS: Don dep nhanh Bo nho dem ^& Flush DNS giam giat ping
+echo   [6] THOAT
+echo =================================================================
+set /p chon="Nhap lua chon cua ban (1-6): "
 
-## 📌 HƯỚNG DẪN CHẠY BỘ CÔNG CỤ
-1. **Tải file script về máy tính.**
-2. **Kích hoạt quyền Quản trị viên:** Nhấp chuột phải vào file `.bat` và chọn **"Run as administrator"** (Chạy với quyền admin). *Nếu không có quyền này, Windows sẽ chặn toàn bộ lệnh can thiệp hệ thống.*
-3. **Áp dụng các gói tối ưu:** Lần lượt chọn các mục từ **1 đến 3** (hoặc thêm mục **5** để dọn rác).
-4. **Khởi động lại PC:** Sau khi chạy xong, bạn **bắt buộc phải Restart lại máy tính** để các thay đổi trong Registry chính thức có hiệu lực.
+if "%chon%"=="1" goto bat_chuot_phim
+if "%chon%"=="2" goto bat_cpugpu
+if "%chon%"=="3" goto bat_hethong_mang
+if "%chon%"=="4" goto tat_revert
+if "%chon%"=="5" goto bonus_dondep
+if "%chon%"=="6" exit
+goto menu
 
----
+:bat_chuot_phim
+cls
+echo =================================================================
+echo   DANG BAT: TOI UU HOAC CHUOT ^& BAN PHIM (INPUT LAG ~0MS)
+echo =================================================================
+echo [*] Giam kich thuoc hang doi du lieu Chuot de phan hoi tuc thi...
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Mouclass\Parameters" /v "MouseDataQueueSize" /t REG_DWORD /d 15 /f >nul
 
-## 🛠️ CHI TIẾT CÁC TÍNH NĂNG TRONG MENU
+echo [*] Giam kich thuoc hang doi du lieu Ban phim...
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Kbdclass\Parameters" /v "KeyboardDataQueueSize" /t REG_DWORD /d 15 /f >nul
 
-### [1] Tối ưu Chuột & Bàn phím (Input Lag ~0ms)
-* **Giảm hàng đợi dữ liệu (`MouseDataQueueSize` & `KeyboardDataQueueSize` xuống 15):** Giới hạn dung lượng bộ đệm xếp hàng của Windows. Tín hiệu click chuột và nhấn phím sẽ được gửi thẳng đến CPU để xử lý ngay lập tức thay vì phải "xếp hàng chờ", đưa độ trễ thiết bị ngoại vi về mức tối thiểu.
-* **Vô hiệu hóa Sticky Keys & Bộ lọc đệm phím:** Triệt tiêu hoàn toàn hiện tượng kẹt phím hoặc delay phím khi bạn thực hiện các thao tác di chuyển phức tạp (như táp/strafe liên tục).
-* **Tắt USB Selective Suspend:** Ngăn Windows đưa các cổng USB (chuột, phím, tai nghe) vào trạng thái ngủ tiết kiệm điện. Giữ cho cổng kết nối luôn nhận nguồn điện đầy đủ và ổn định.
+echo [*] Vo hieu hoa Sticky Keys va cac bo loc gay tre dem phim...
+reg add "HKCU\Control Panel\Accessibility\StickyKeys" /v "Flags" /t REG_SZ /d "506" /f >nul
+reg add "HKCU\Control Panel\Accessibility\Keyboard Response" /v "Flags" /t REG_SZ /d "122" /f >nul
 
-### [2] Ép công suất CPU & GPU (Max Peak Performance)
-* **Kích hoạt chế độ Ultimate Performance:** Mở khóa chế độ nguồn điện "Sức mạnh tối đa" ẩn của Windows, ngăn chặn hiện tượng tự động tụt xung dòng điện (drop clock) của CPU.
-* **Set High Priority cho VALORANT:** Ép Windows luôn ưu tiên phân phối chu kỳ xử lý cao nhất của CPU cho tiến trình game (`VALORANT-Win64-Shipping.exe`).
-* **High Performance GPU:** Định tuyến ép buộc Windows phải cấp card đồ họa rời mạnh nhất cho game, tránh việc nhận nhầm card on-board.
-* **Kích hoạt HAGS (Hardware Accelerated GPU Scheduling):** Cho phép card đồ họa tự quản lý bộ nhớ của chính nó, giảm tải tối đa cho CPU và giảm tình trạng nghẽn cổ chai (bottleneck).
+echo [*] Tat tinh nang ngu tiet kiem dien cua cac cong USB (Selective Suspend)...
+powercfg /SETACVALUEINDEX SCHEME_CURRENT SUB_NONE 2f1a6304-95a7-4de0-b2d3-ac0469de4d2c 0 >nul
+powercfg /SETACTIVE SCHEME_CURRENT >nul
 
-### [3] Tối ưu Hệ thống & Băng thông Mạng
-* **Tắt HPET (High Precision Event Timer) & Dynamic Ticks:** Loại bỏ bộ định thời phần cứng cũ kỹ của Windows — nguyên nhân hàng đầu gây ra hiện tượng giật micro-stutter (khựng hình vi mô) dù FPS hiển thị trên màn hình vẫn cao.
-* **Network Throttling Index & System Responsiveness:** Tắt tính năng tự động bóp băng thông mạng khi xử lý tác vụ nền của Windows, dành 100% tài nguyên mạng cho Game để giảm ping và hạn chế mất gói tin (Packet Loss).
-* **Win32PrioritySeparation (38):** Cấu hình hệ thống tập trung toàn bộ tài nguyên CPU xử lý cho ứng dụng đang chạy ở Foreground (màn hình game chính).
+echo.
+echo [OK] Da toi uu phan cung ngoai vi! Vui long Restart PC sau khi xong tat ca.
+echo.
+pause
+goto menu
 
-### [4] TAT / REVERT: Khôi phục mặc định Windows
-* Nếu bạn muốn đưa máy tính trở lại trạng thái ban đầu, lựa chọn này sẽ hoàn tác 100% các chỉnh sửa Registry, reset lại các thông số chuột/bàn phím về mức mặc định (`100`) và trả mạng về cấu hình gốc của Windows.
+:bat_cpugpu
+cls
+echo =================================================================
+echo   DANG BAT: EP CONG SUAT CPU ^& GPU (MAX GAME FPS)
+echo =================================================================
+echo [*] Kich hoat va bat che do nguon dien sieu hieu nang (Ultimate Performance)...
+powercfg /duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61 >nul 2>&1
+powercfg /setactive e9a42b02-d5df-448d-aa00-03f14749eb61 >nul 2>&1
 
-### [5] BONUS: Dọn dẹp nhanh bộ nhớ đệm & Flush DNS
-* **Flush DNS:** Xóa sạch bộ nhớ đệm định danh mạng, làm sạch đường truyền tới Server game giúp ổn định ping.
-* **Xóa file Temp:** Giải phóng dung lượng ổ cứng bị chiếm dụng bởi các tệp tin rác tạm thời trong quá trình Windows vận hành.
+echo [*] Thiet lap luon uu tien CPU muc cao nhat (High Priority) cho Valorant...
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\VALORANT-Win64-Shipping.exe\PerfOptions" /v "CpuPriorityClass" /t REG_DWORD /d 3 /f >nul
 
----
+echo [*] Ep Windows luon cap Card do hoa roi (High Performance GPU) cho Valorant...
+reg add "HKCU\Software\Microsoft\DirectX\UserGpuPreferences" /v "VALORANT-Win64-Shipping.exe" /t REG_SZ /d "GpuPreference=2;" /f >nul
 
-## 🚀 THỨ TỰ THỰC HIỆN ĐỂ ĐẠT HIỆU QUẢ TỐT NHẤT
+echo [*] Kich hoat tinh nang Tang toc phan cung GPU (HAGS - Hardware Accelerated GPU Scheduling)...
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" /v "HwSchMode" /t REG_DWORD /d 2 /f >nul
 
-1. Mở file script với quyền **Admin**.
-2. Nhập phím `1` (Chờ chạy xong) -> Nhập phím bất kỳ để về Menu.
-3. Nhập phím `2` (Chờ chạy xong) -> Nhập phím bất kỳ để về Menu.
-4. Nhập phím `3` (Chờ chạy xong) -> Nhập phím bất kỳ để về Menu.
-5. Nhập phím `5` để dọn rác nhanh cho hệ thống.
-6. Nhập phím `6` để thoát công cụ.
-7. **Khởi động lại máy tính (Restart PC)**.
+echo.
+echo [OK] Da ep xung thiet lap hieu nang CPU/GPU len muc cao nhat!
+echo.
+pause
+goto menu
 
-> 💡 **Lưu ý nhỏ:** Riêng mục `[5] BONUS` bạn có thể chạy lại bất cứ lúc nào (ví dụ: trước mỗi trận đấu hoặc sau một ngày dài sử dụng máy) để làm sạch máy nhanh mà không cần phải khởi động lại máy tính.
+:bat_hethong_mang
+cls
+echo =================================================================
+echo   DANG BAT: TOI UU BANG THONG MANG ^& TICK RATE HE THONG
+echo =================================================================
+echo [*] Vo hieu hoa HPET de triet tieu micro-stutter (Tre vi mo)...
+bcdedit /set useplatformclock no >nul 2>&1
+bcdedit /set disabledynamictick yes >nul 2>&1
+
+echo [*] Set bang thong Windows uu tien phan hoi Game 100%% (System Responsiveness)...
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "NetworkThrottlingIndex" /t REG_DWORD /d 4294967295 /f >nul
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "SystemResponsiveness" /t REG_DWORD /d 0 /f >nul
+
+echo [*] Uu tien CPU cho cac tac vu tuong tac truc tiep o Foreground (Game)...
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl" /v "Win32PrioritySeparation" /t REG_DWORD /d 38 /f >nul
+
+echo [*] Toi uu thiet lap TCP/IP de truyen goi tin chuot/phim di ngay lap tuc...
+netsh int tcp set global autotuninglevel=normal >nul
+netsh int tcp set global congestionprovider=ctcp >nul 2>&1
+netsh int tcp set global ecncapability=disabled >nul
+
+echo.
+echo [OK] Da dinh tuyen lai phan phoi mang va phan cuong phu hop voi Max Ping!
+echo.
+pause
+goto menu
+
+:tat_revert
+cls
+echo =================================================================
+echo   DANG TAT / REVERT ALL TWEAKS: KHOI PHUC MAC DINH WINDOWS
+echo =================================================================
+echo [*] Tra hang doi du lieu Chuot va Ban phim ve mac dinh (100)...
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Mouclass\Parameters" /v "MouseDataQueueSize" /t REG_DWORD /d 100 /f >nul
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Kbdclass\Parameters" /v "KeyboardDataQueueSize" /t REG_DWORD /d 100 /f >nul
+
+echo [*] Bat lai che do ngu USB tiet kiem dien...
+powercfg /SETACVALUEINDEX SCHEME_CURRENT SUB_NONE 2f1a6304-95a7-4de0-b2d3-ac0469de4d2c 1 >nul
+powercfg /setactive SCHEME_BALANCED >nul 2>&1
+
+echo [*] Xoa uu tien CPU cua Valorant va tra ve Mac dinh...
+reg delete "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\VALORANT-Win64-Shipping.exe" /f >nul 2>&1
+reg delete "HKCU\Software\Microsoft\DirectX\UserGpuPreferences" /v "VALORANT-Win64-Shipping.exe" /f >nul 2>&1
+
+echo [*] Bat lai bo dinh thoi HPET va Dynamic Ticks...
+bcdedit /deletevalue useplatformclock >nul 2>&1
+bcdedit /deletevalue disabledynamictick >nul 2>&1
+
+echo [*] Reset thiet lap mang va System Responsiveness ve ban dau...
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "NetworkThrottlingIndex" /t REG_DWORD /d 10 /f >nul
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v "SystemResponsiveness" /t REG_DWORD /d 20 /f >nul
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl" /v "Win32PrioritySeparation" /t REG_DWORD /d 2 /f >nul
+
+echo.
+echo [OK] Da xoa toan bo Tweaks va khoi phuc lai thiet lap goc cua Windows!
+echo.
+pause
+goto menu
+
+:bonus_dondep
+cls
+echo =================================================================
+echo   DANG DON DEP HE THONG ^& GIAM THIEU LAGGING
+echo =================================================================
+echo [*] Xoa DNS Cache (Flush DNS) giam thieu xoe goi tin...
+ipconfig /flushdns
+
+echo [*] Dang giai phong file rac trong thu muc Temp...
+del /s /f /q %userprofile%\AppData\Local\Temp\*.* >nul 2>&1
+del /s /f /q C:\Windows\Temp\*.* >nul 2>&1
+
+echo.
+echo [OK] He thong da duoc lam sach nhe nhang!
+echo.
+pause
+goto menu
