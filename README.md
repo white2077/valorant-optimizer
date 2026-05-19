@@ -15,7 +15,7 @@ Bộ công cụ bằng file Batch (`.bat`) giúp can thiệp an toàn vào Windo
 ## 🛠️ CHI TIẾT CÁC TÍNH NĂNG TRONG MENU
 
 ### [1] Tối ưu Chuột & Bàn phím (Input Lag ~0ms)
-* **Giảm hàng đợi dữ liệu (`MouseDataQueueSize` & `KeyboardDataQueueSize` xuống 15):** Giới hạn dung lượng bộ đệm xếp hàng của Windows. Tín hiệu click chuột và nhấn phím sẽ được gửi thẳng đến CPU để xử lý ngay lập tức thay vì phải "xếp hàng chờ", đưa độ trễ thiết bị ngoại vi về mức tối thiểu.
+* **Giảm hàng đợi dữ liệu (`MouseDataQueueSize` & `KeyboardDataQueueSize` xuống 50):** Giới hạn dung lượng bộ đệm xếp hàng của Windows. Tín hiệu click chuột và nhấn phím sẽ được gửi thẳng đến CPU để xử lý ngay lập tức thay vì phải "xếp hàng chờ", đưa độ trễ thiết bị ngoại vi về mức tối thiểu.
 * **Vô hiệu hóa Sticky Keys & Bộ lọc đệm phím:** Triệt tiêu hoàn toàn hiện tượng kẹt phím hoặc delay phím khi bạn thực hiện các thao tác di chuyển phức tạp (như táp/strafe liên tục).
 * **Tắt USB Selective Suspend:** Ngăn Windows đưa các cổng USB (chuột, phím, tai nghe) vào trạng thái ngủ tiết kiệm điện. Giữ cho cổng kết nối luôn nhận nguồn điện đầy đủ và ổn định.
 
